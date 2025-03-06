@@ -24,6 +24,7 @@
         <h2>Gerador de Senhas</h2>
         <button onclick="generatePassword()">Gerar Senha</button>
         <p id="generatedPassword"></p>
+        <p id="warningMessage" class="hidden" style="color: red;">Atenção: Restam apenas 5 senhas. Crie novas senhas!</p>
     </div>
 
     <script>
@@ -47,15 +48,21 @@
 
         function generatePassword() {
             if (passwords.length > 0) {
-                let senha = passwords.shift();
+                let senha = passwords.shift(); // Remove a primeira senha do array
                 document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
+
+                // Verifica se restam 5 ou menos senhas e exibe a mensagem de aviso
+                if (passwords.length <= 5) {
+                    document.getElementById("warningMessage").classList.remove("hidden");
+                }
             } else {
                 document.getElementById("generatedPassword").innerText = "Todas as senhas foram usadas!";
+                document.getElementById("warningMessage").classList.add("hidden"); // Esconde o aviso, pois não há mais senhas
             }
         }
 
         function loadPasswordsFromFile() {
-            const filePath = 'https://raw.githubusercontent.com/HPS-Sistema/GeradorSenhaAPP/main/senhas.json';
+            const filePath = 'https://raw.githubusercontent.com/HPS-Sistema/GeradorSenhaAPP/main/senhas.json'; // Link correto
             fetch(filePath)
                 .then(response => response.json())
                 .then(data => {
