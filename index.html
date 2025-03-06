@@ -31,6 +31,36 @@
         const validUser = "admin";
         const validPass = "123456";
         let passwords = [];
+        let usedPasswords = [];
+
+        // Carregar senhas do arquivo JSON
+        function loadPasswordsFromFile() {
+            const filePath = 'https://raw.githubusercontent.com/HPS-Sistema/GeradorSenhaAPP/main/senhas.json'; // Link correto
+            fetch(filePath)
+                .then(response => response.json())
+                .then(data => {
+                    passwords = data.senhas;
+                    loadUsedPasswords();  // Carregar senhas usadas
+                    alert("Senhas carregadas com sucesso!");
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar o arquivo de senhas:', error);
+                    alert("Falha ao carregar o arquivo de senhas.");
+                });
+        }
+
+        // Carregar as senhas usadas do localStorage
+        function loadUsedPasswords() {
+            const storedUsedPasswords = localStorage.getItem('usedPasswords');
+            if (storedUsedPasswords) {
+                usedPasswords = JSON.parse(storedUsedPasswords);
+            }
+        }
+
+        // Salvar as senhas usadas no localStorage
+        function saveUsedPasswords() {
+            localStorage.setItem('usedPasswords', JSON.stringify(usedPasswords));
+        }
 
         function login() {
             let user = document.getElementById("username").value;
@@ -48,31 +78,28 @@
 
         function generatePassword() {
             if (passwords.length > 0) {
-                let senha = passwords.shift(); // Remove a primeira senha do array
-                document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
+                // Filtrar as senhas já usadas
+                let availablePasswords = passwords.filter(p => !usedPasswords.includes(p));
 
-                // Verifica se restam 5 ou menos senhas e exibe a mensagem de aviso
-                if (passwords.length <= 5) {
-                    document.getElementById("warningMessage").classList.remove("hidden");
+                if (availablePasswords.length > 0) {
+                    // Pega uma senha que ainda não foi usada
+                    let senha = availablePasswords.shift(); // Remove a primeira senha não usada
+                    usedPasswords.push(senha); // Marca a senha como usada
+                    saveUsedPasswords(); // Salva as senhas usadas
+
+                    document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
+                    
+                    // Verifica se restam 5 ou menos senhas e exibe a mensagem de aviso
+                    if (availablePasswords.length <= 5) {
+                        document.getElementById("warningMessage").classList.remove("hidden");
+                    }
+                } else {
+                    document.getElementById("generatedPassword").innerText = "Todas as senhas foram usadas!";
+                    document.getElementById("warningMessage").classList.add("hidden"); // Esconde o aviso, pois não há mais senhas
                 }
             } else {
-                document.getElementById("generatedPassword").innerText = "Todas as senhas foram usadas!";
-                document.getElementById("warningMessage").classList.add("hidden"); // Esconde o aviso, pois não há mais senhas
+                document.getElementById("generatedPassword").innerText = "Falha ao carregar senhas.";
             }
-        }
-
-        function loadPasswordsFromFile() {
-            const filePath = 'https://raw.githubusercontent.com/HPS-Sistema/GeradorSenhaAPP/main/senhas.json'; // Link correto
-            fetch(filePath)
-                .then(response => response.json())
-                .then(data => {
-                    passwords = data.senhas;
-                    alert("Senhas carregadas com sucesso!");
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar o arquivo de senhas:', error);
-                    alert("Falha ao carregar o arquivo de senhas.");
-                });
         }
     </script>
 
