@@ -41,7 +41,6 @@ h2 {
     box-shadow: 0 0 20px rgba(255, 99, 71, 0.6);
 }
 
-/* Inputs */
 input {
     width: 100%;
     padding: 12px;
@@ -88,18 +87,16 @@ button:hover {
 
 /* Estilo para a página do gerador de senhas */
 #passwordPage {
-    display: none; /* Página de gerador de senhas começa oculta */
+    display: none;
     animation: fadeIn 0.5s ease-in-out;
 }
 
-/* Senha gerada em amarelo */
 #generatedPassword {
     font-size: 20px;
-    color: #FFD700;
+    color: #FFD700; /* Senha gerada em amarelo */
     margin-top: 30px;
 }
 
-/* Efetivamente esconder elementos */
 .hidden {
     display: none;
 }
@@ -116,4 +113,16 @@ button:hover {
     to {
         opacity: 1;
     }
+}
+
+/* Estilo para o aviso de "Todas as senhas foram usadas" */
+#generatedPassword span {
+    color: red;
+    font-weight: bold;
+}
+
+/* Estilo para o botão quando todas as senhas forem usadas */
+button:disabled {
+    background-color: #999;
+    cursor: not-allowed;
 }
