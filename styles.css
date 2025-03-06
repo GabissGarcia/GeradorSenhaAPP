@@ -41,6 +41,7 @@ h2 {
     box-shadow: 0 0 20px rgba(255, 99, 71, 0.6);
 }
 
+/* Inputs */
 input {
     width: 100%;
     padding: 12px;
@@ -87,7 +88,7 @@ button:hover {
 
 /* Estilo para a página do gerador de senhas */
 #passwordPage {
-    display: none;
+    display: none; /* Página do gerador de senhas inicia oculta */
     animation: fadeIn 0.5s ease-in-out;
 }
 
