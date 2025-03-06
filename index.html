@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login e Gerador de Senhas</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Referência ao arquivo CSS externo -->
+    <link rel="stylesheet" href="styles.css"> <!-- Referência ao CSS -->
 </head>
 <body>
 
@@ -21,7 +21,7 @@
     </div>
 
     <!-- Página de Gerador de Senhas (após login) -->
-    <div id="passwordPage" class="fadeIn">
+    <div id="passwordPage" class="fadeIn hidden">
         <h2>Gerador de Senhas</h2>
         <button onclick="generatePassword()">Gerar Senha</button>
         <p id="generatedPassword"></p>
@@ -47,7 +47,7 @@
                 document.getElementById("loginError").classList.remove("hidden");
             }
         }
-        
+
         // Função para gerar senhas
         function generatePassword() {
             if (passwords.length > 0) {
@@ -60,12 +60,18 @@
 
         // Função para carregar senhas do arquivo 'senhas.json'
         function loadPasswordsFromFile() {
-            // Carregando senhas automaticamente ao acessar a página
-            const filePath = 'https://raw.githubusercontent.com/GabissGarcia/GeradorSenhaAPP/main/senhas.json'; // Caminho do arquivo de senhas
+            // Caminho correto para o arquivo JSON hospedado no GitHub Pages
+            const filePath = 'https://gabissgarcia.github.io/GeradorSenhaAPP/senhas.json';
+
             fetch(filePath)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao carregar o arquivo');
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    passwords = data.senhas; // Acessa o array de senhas no JSON
+                    passwords = data.senhas;
                     alert("Senhas carregadas com sucesso!");
                 })
                 .catch(error => {
