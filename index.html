@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login e Gerador de Senhas</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Referência ao CSS -->
+    <link rel="stylesheet" href="styles.css"> <!-- Referência ao arquivo CSS externo -->
 </head>
 <body>
 
@@ -21,7 +21,7 @@
     </div>
 
     <!-- Página de Gerador de Senhas (após login) -->
-    <div id="passwordPage" class="fadeIn hidden">
+    <div id="passwordPage" class="fadeIn hidden"> <!-- Aqui a página começa oculta -->
         <h2>Gerador de Senhas</h2>
         <button onclick="generatePassword()">Gerar Senha</button>
         <p id="generatedPassword"></p>
@@ -40,14 +40,14 @@
             if (user === validUser && pass === validPass) {
                 // Se o login for válido, carrega as senhas e mostra a página de gerador de senhas
                 loadPasswordsFromFile();
-                document.getElementById("loginPage").classList.add("hidden");
-                document.getElementById("passwordPage").classList.remove("hidden");
+                document.getElementById("loginPage").classList.add("hidden"); // Oculta a página de login
+                document.getElementById("passwordPage").classList.remove("hidden"); // Exibe a página de senhas
             } else {
                 // Se o login for inválido, exibe mensagem de erro
                 document.getElementById("loginError").classList.remove("hidden");
             }
         }
-
+        
         // Função para gerar senhas
         function generatePassword() {
             if (passwords.length > 0) {
@@ -60,18 +60,12 @@
 
         // Função para carregar senhas do arquivo 'senhas.json'
         function loadPasswordsFromFile() {
-            // Caminho correto para o arquivo JSON hospedado no GitHub Pages
-            const filePath = 'https://gabissgarcia.github.io/GeradorSenhaAPP/senhas.json';
-
+            // Carregando senhas automaticamente ao acessar a página
+            const filePath = 'senhas.json'; // Caminho do arquivo de senhas
             fetch(filePath)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao carregar o arquivo');
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    passwords = data.senhas;
+                    passwords = data.senhas; // Acessa o array de senhas no JSON
                     alert("Senhas carregadas com sucesso!");
                 })
                 .catch(error => {
