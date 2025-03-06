@@ -30,7 +30,6 @@
         const validUser = "admin";
         const validPass = "123456";
         let passwords = [];
-        let usedPasswords = new Set(); // Conjunto para armazenar senhas já usadas
 
         function login() {
             let user = document.getElementById("username").value;
@@ -47,32 +46,20 @@
         }
 
         function generatePassword() {
-            if (usedPasswords.size === passwords.length) {
-                document.getElementById("generatedPassword").innerHTML = `
-                    <span style="color: red; font-weight: bold;">
-                        Todas as senhas foram usadas!<br>
-                        Por favor, gere novas senhas no sistema.
-                    </span>
-                `;
-                return;
+            if (passwords.length > 0) {
+                let senha = passwords.shift();
+                document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
+            } else {
+                document.getElementById("generatedPassword").innerText = "Todas as senhas foram usadas!";
             }
-
-            let senha;
-            do {
-                senha = passwords[Math.floor(Math.random() * passwords.length)];
-            } while (usedPasswords.has(senha)); // Evita repetir senhas já usadas
-
-            usedPasswords.add(senha); // Marca senha como usada
-            document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
         }
 
         function loadPasswordsFromFile() {
-            const filePath = 'https://github.com/HPS-Sistema/GeradorSenhaAPP/blob/main/senhas.json';
+            const filePath = 'https://raw.githubusercontent.com/HPS-Sistema/GeradorSenhaAPP/main/senhas.json';
             fetch(filePath)
                 .then(response => response.json())
                 .then(data => {
                     passwords = data.senhas;
-                    usedPasswords.clear(); // Reseta as senhas usadas ao carregar novas
                     alert("Senhas carregadas com sucesso!");
                 })
                 .catch(error => {
