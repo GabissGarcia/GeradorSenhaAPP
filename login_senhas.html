@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login e Gerador de Senhas</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Referência ao arquivo CSS externo -->
+</head>
+<body>
+
+    <!-- Logo da Empresa -->
+    <img src="imagens/hps-fleet-logo.png" alt="Logo HPS" class="logo"> <!-- Logo da empresa HPS -->
+
+    <!-- Página de Login -->
+    <div id="loginPage" class="fadeIn">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Usuário"><br>
+        <input type="password" id="password" placeholder="Senha"><br>
+        <button onclick="login()">Entrar</button>
+        <p id="loginError" class="hidden">Usuário ou senha incorretos!</p>
+    </div>
+
+    <!-- Página de Gerador de Senhas (após login) -->
+    <div id="passwordPage" class="fadeIn">
+        <h2>Gerador de Senhas</h2>
+        <button onclick="generatePassword()">Gerar Senha</button>
+        <p id="generatedPassword"></p>
+    </div>
+
+    <script>
+        const validUser = "admin"; // Usuário válido
+        const validPass = "123456"; // Senha válida
+        let passwords = []; // Array para armazenar as senhas
+
+        // Função para verificar o login
+        function login() {
+            let user = document.getElementById("username").value;
+            let pass = document.getElementById("password").value;
+            
+            if (user === validUser && pass === validPass) {
+                // Se o login for válido, carrega as senhas e mostra a página de gerador de senhas
+                loadPasswordsFromFile();
+                document.getElementById("loginPage").classList.add("hidden");
+                document.getElementById("passwordPage").classList.remove("hidden");
+            } else {
+                // Se o login for inválido, exibe mensagem de erro
+                document.getElementById("loginError").classList.remove("hidden");
+            }
+        }
+        
+        // Função para gerar senhas
+        function generatePassword() {
+            if (passwords.length > 0) {
+                let senha = passwords.shift(); // Remove a primeira senha do array
+                document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
+            } else {
+                document.getElementById("generatedPassword").innerText = "Todas as senhas foram usadas!";
+            }
+        }
+
+        // Função para carregar senhas do arquivo 'senhas.json'
+        function loadPasswordsFromFile() {
+            // Carregando senhas automaticamente ao acessar a página
+            const filePath = 'senhas.json'; // Caminho do arquivo de senhas
+            fetch(filePath)
+                .then(response => response.json())
+                .then(data => {
+                    passwords = data.senhas; // Acessa o array de senhas no JSON
+                    alert("Senhas carregadas com sucesso!");
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar o arquivo de senhas:', error);
+                    alert("Falha ao carregar o arquivo de senhas.");
+                });
+        }
+    </script>
+
+</body>
+</html>

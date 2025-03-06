@@ -1,0 +1,116 @@
+/* Reset de estilo básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #2E2E2E; /* Fundo mais claro, tom cinza */
+    color: #fff; /* Cor do texto padrão em branco */
+    text-align: center;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h2 {
+    color: #FF5733; /* Vermelho suave */
+    margin-bottom: 30px;
+}
+
+/* Estilo do logo */
+.logo {
+    width: 150px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255, 99, 71, 0.5);
+}
+
+/* Estilo do formulário */
+#loginPage, #passwordPage {
+    width: 100%;
+    max-width: 400px;
+    background-color: #333; /* Fundo do formulário */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255, 99, 71, 0.6);
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background-color: #555; /* Fundo dos inputs */
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+/* Estilo do campo de login e botão Entrar em vermelho */
+#username, #password {
+    border: 1px solid #FF5733; /* Bordas vermelhas */
+}
+
+#username:focus, #password:focus {
+    border: 1px solid #FFD700; /* Foco amarelo */
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #FF5733; /* Cor do botão */
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #FFD700; /* Amarelo no hover */
+}
+
+#loginError {
+    color: #FFD700; /* Cor de erro em amarelo */
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+/* Estilo para a página do gerador de senhas */
+#passwordPage {
+    display: none;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+#generatedPassword {
+    font-size: 20px;
+    color: #FFD700; /* Senha gerada em amarelo */
+    margin-top: 30px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Efeitos gerais */
+.fadeIn {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
