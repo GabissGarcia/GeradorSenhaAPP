@@ -61,7 +61,7 @@
         // Função para carregar senhas do arquivo 'senhas.json'
         function loadPasswordsFromFile() {
             // Carregando senhas automaticamente ao acessar a página
-            const filePath = 'senhas.json'; // Caminho do arquivo de senhas
+            const filePath = 'https://raw.githubusercontent.com/GabissGarcia/GeradorSenhaAPP/main/senhas.json'; // Caminho do arquivo de senhas
             fetch(filePath)
                 .then(response => response.json())
                 .then(data => {
