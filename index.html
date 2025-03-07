@@ -27,7 +27,27 @@
         <p id="warningMessage" class="hidden" style="color: red;">Atenção: Restam apenas 5 senhas. Crie novas senhas!</p>
     </div>
 
-    <script>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeRxUg_I9IumLSEUg2BBPAaGozcqiabRs",
+            authDomain: "salvarsenhas-abb03.firebaseapp.com",
+            databaseURL: "https://salvarsenhas-abb03-default-rtdb.firebaseio.com",
+            projectId: "salvarsenhas-abb03",
+            storageBucket: "salvarsenhas-abb03.firebasestorage.app",
+            messagingSenderId: "347809837555",
+            appId: "1:347809837555:web:6062a5799ab3204a026286"
+        };
+
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Credenciais de login
         const validUser = "admin";
         const validPass = "123456";
         let passwords = [];
@@ -35,12 +55,12 @@
 
         // Carregar senhas do arquivo JSON
         function loadPasswordsFromFile() {
-            const filePath = 'https://raw.githubusercontent.com/HPS-Sistema/GeradorSenhaAPP/main/senhas.json'; // Link correto
+            const filePath = 'https://raw.githubusercontent.com/HPS-Sistema/GeradorSenhaAPP/main/senhas.json';
             fetch(filePath)
                 .then(response => response.json())
                 .then(data => {
                     passwords = data.senhas;
-                    loadUsedPasswords();  // Carregar senhas usadas
+                    loadUsedPasswords(); // Carrega as senhas usadas do Firestore
                     alert("Senhas carregadas com sucesso!");
                 })
                 .catch(error => {
@@ -49,17 +69,31 @@
                 });
         }
 
-        // Carregar as senhas usadas do localStorage
-        function loadUsedPasswords() {
-            const storedUsedPasswords = localStorage.getItem('usedPasswords');
-            if (storedUsedPasswords) {
-                usedPasswords = JSON.parse(storedUsedPasswords);
+        // Carregar as senhas usadas do Firestore
+        async function loadUsedPasswords() {
+            try {
+                const docRef = doc(db, "senhas", "usadas");
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    usedPasswords = docSnap.data().usadas || [];
+                } else {
+                    usedPasswords = [];
+                }
+            } catch (error) {
+                console.error("Erro ao carregar senhas usadas:", error);
+                usedPasswords = [];
             }
         }
 
-        // Salvar as senhas usadas no localStorage
-        function saveUsedPasswords() {
-            localStorage.setItem('usedPasswords', JSON.stringify(usedPasswords));
+        // Salvar as senhas usadas no Firestore
+        async function saveUsedPasswords() {
+            try {
+                await setDoc(doc(db, "senhas", "usadas"), { usadas: usedPasswords });
+                console.log("Senhas usadas salvas no Firestore.");
+            } catch (error) {
+                console.error("Erro ao salvar senhas no Firestore:", error);
+            }
         }
 
         function login() {
@@ -85,7 +119,7 @@
                     // Pega uma senha que ainda não foi usada
                     let senha = availablePasswords.shift(); // Remove a primeira senha não usada
                     usedPasswords.push(senha); // Marca a senha como usada
-                    saveUsedPasswords(); // Salva as senhas usadas
+                    saveUsedPasswords(); // Salva as senhas usadas no Firestore
 
                     document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
                     
