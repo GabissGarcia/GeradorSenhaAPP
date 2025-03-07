@@ -22,7 +22,7 @@
     <!-- Página de Gerador de Senhas (após login) -->
     <div id="passwordPage" class="fadeIn hidden" style="display: none;">
         <h2>Gerador de Senhas</h2>
-        <button id="generatePasswordButton">Gerar Senha</button> <!-- Remover o onclick aqui -->
+        <button onclick="generatePassword()">Gerar Senha</button>
         <p id="generatedPassword"></p>
         <p id="warningMessage" class="hidden" style="color: red;">Atenção: Restam apenas 5 senhas. Crie novas senhas!</p>
     </div>
@@ -30,7 +30,7 @@
     <script type="module">
         // Firebase configuration
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAeRxUg_I9IumLSEUg2BBPAaGozcqiabRs",
@@ -59,7 +59,7 @@
                 .then(response => response.json())
                 .then(data => {
                     passwords = data.senhas;
-                    loadUsedPasswords();  // Carregar senhas usadas
+                    loadUsedPasswords();  // Carregar senhas usadas do Firestore
                     alert("Senhas carregadas com sucesso!");
                 })
                 .catch(error => {
@@ -68,17 +68,23 @@
                 });
         }
 
-        // Carregar as senhas usadas do localStorage
-        function loadUsedPasswords() {
-            const storedUsedPasswords = localStorage.getItem('usedPasswords');
-            if (storedUsedPasswords) {
-                usedPasswords = JSON.parse(storedUsedPasswords);
+        // Carregar as senhas usadas do Firestore
+        async function loadUsedPasswords() {
+            const usedPasswordsDocRef = doc(db, "senhas", "usadas");
+            const docSnap = await getDoc(usedPasswordsDocRef);
+            if (docSnap.exists()) {
+                usedPasswords = docSnap.data().usedPasswords || [];
+            } else {
+                console.log("Documento de senhas usadas não encontrado!");
             }
         }
 
-        // Salvar as senhas usadas no localStorage
-        function saveUsedPasswords() {
-            localStorage.setItem('usedPasswords', JSON.stringify(usedPasswords));
+        // Salvar as senhas usadas no Firestore
+        async function saveUsedPasswords() {
+            const usedPasswordsDocRef = doc(db, "senhas", "usadas");
+            await setDoc(usedPasswordsDocRef, {
+                usedPasswords: usedPasswords
+            });
         }
 
         // Função de login
@@ -106,7 +112,7 @@
                     // Pega uma senha que ainda não foi usada
                     let senha = availablePasswords.shift(); // Remove a primeira senha não usada
                     usedPasswords.push(senha); // Marca a senha como usada
-                    saveUsedPasswords(); // Salva as senhas usadas
+                    saveUsedPasswords(); // Salva as senhas usadas no Firestore
 
                     document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
                     
@@ -125,10 +131,6 @@
 
         // Adicionar o evento de clique para o botão de login
         document.getElementById("loginButton").addEventListener("click", login);
-
-        // Adicionar o evento de clique para o botão de gerar senha
-        document.getElementById("generatePasswordButton").addEventListener("click", generatePassword);
-
     </script>
 
 </body>
