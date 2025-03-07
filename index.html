@@ -27,11 +27,12 @@
         <p id="warningMessage" class="hidden" style="color: red;">Atenção: Restam apenas 5 senhas. Crie novas senhas!</p>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
-    
-    <script>
-        // Configuração do Firebase
+    <script type="module">
+        // Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js";
+
+        // Sua configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAeRxUg_I9IumLSEUg2BBPAaGozcqiabRs",
             authDomain: "salvarsenhas-abb03.firebaseapp.com",
@@ -42,8 +43,8 @@
             appId: "1:347809837555:web:6062a5799ab3204a026286"
         };
 
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(app); // Obter o Firestore
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
         const validUser = "admin";
         const validPass = "123456";
@@ -52,12 +53,12 @@
 
         // Carregar senhas do arquivo JSON
         function loadPasswordsFromFile() {
-            const filePath = 'https://raw.githubusercontent.com/HPS-Sistema/GeradorSenhaAPP/main/senhas.json'; // Link correto
+            const filePath = 'https://raw.githubusercontent.com/HPS-Sistema/GeradorSenhaAPP/main/senhas.json';
             fetch(filePath)
                 .then(response => response.json())
                 .then(data => {
                     passwords = data.senhas;
-                    loadUsedPasswords();  // Carregar senhas usadas
+                    loadUsedPasswords(); 
                     alert("Senhas carregadas com sucesso!");
                 })
                 .catch(error => {
@@ -88,54 +89,34 @@
                 loadPasswordsFromFile();
                 document.getElementById("loginPage").classList.add("hidden");
                 document.getElementById("passwordPage").classList.remove("hidden");
-                document.getElementById("passwordPage").style.display = "block"; // Garante exibição
+                document.getElementById("passwordPage").style.display = "block";
             } else {
                 document.getElementById("loginError").classList.remove("hidden");
             }
         }
 
-        // Função para gerar senha
+        // Gerar senha
         function generatePassword() {
             if (passwords.length > 0) {
-                // Filtrar as senhas já usadas
                 let availablePasswords = passwords.filter(p => !usedPasswords.includes(p));
 
                 if (availablePasswords.length > 0) {
-                    // Pega uma senha que ainda não foi usada
-                    let senha = availablePasswords.shift(); // Remove a primeira senha não usada
-                    usedPasswords.push(senha); // Marca a senha como usada
-                    saveUsedPasswords(); // Salva as senhas usadas
+                    let senha = availablePasswords.shift();
+                    usedPasswords.push(senha);
+                    saveUsedPasswords();
 
                     document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
-                    
-                    // Salvar senha no Firestore
-                    savePasswordToFirestore(senha);
 
-                    // Verifica se restam 5 ou menos senhas e exibe a mensagem de aviso
                     if (availablePasswords.length <= 5) {
                         document.getElementById("warningMessage").classList.remove("hidden");
                     }
                 } else {
                     document.getElementById("generatedPassword").innerText = "Todas as senhas foram usadas!";
-                    document.getElementById("warningMessage").classList.add("hidden"); // Esconde o aviso, pois não há mais senhas
+                    document.getElementById("warningMessage").classList.add("hidden");
                 }
             } else {
                 document.getElementById("generatedPassword").innerText = "Falha ao carregar senhas.";
             }
-        }
-
-        // Função para salvar senha no Firestore
-        function savePasswordToFirestore(password) {
-            db.collection("senhas").add({
-                senha: password,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            })
-            .then(() => {
-                console.log("Senha salva com sucesso no Firestore!");
-            })
-            .catch(error => {
-                console.error("Erro ao salvar senha no Firestore: ", error);
-            });
         }
     </script>
 
