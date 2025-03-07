@@ -15,14 +15,14 @@
         <h2>Login</h2>
         <input type="text" id="username" placeholder="Usuário"><br>
         <input type="password" id="password" placeholder="Senha"><br>
-        <button id="loginButton">Entrar</button>
+        <button id="loginButton">Entrar</button> <!-- Remova o onclick -->
         <p id="loginError" class="hidden">Usuário ou senha incorretos!</p>
     </div>
 
     <!-- Página de Gerador de Senhas (após login) -->
     <div id="passwordPage" class="fadeIn hidden" style="display: none;">
         <h2>Gerador de Senhas</h2>
-        <button id="generatePasswordButton">Gerar Senha</button> <!-- Atualizado o id aqui -->
+        <button id="generatePasswordButton">Gerar Senha</button> <!-- Remover o onclick aqui -->
         <p id="generatedPassword"></p>
         <p id="warningMessage" class="hidden" style="color: red;">Atenção: Restam apenas 5 senhas. Crie novas senhas!</p>
     </div>
