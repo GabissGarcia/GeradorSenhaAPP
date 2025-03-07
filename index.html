@@ -27,11 +27,10 @@
         <p id="warningMessage" class="hidden" style="color: red;">Atenção: Restam apenas 5 senhas. Crie novas senhas!</p>
     </div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+    
+    <script>
         // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAeRxUg_I9IumLSEUg2BBPAaGozcqiabRs",
@@ -43,11 +42,9 @@
             appId: "1:347809837555:web:6062a5799ab3204a026286"
         };
 
-        // Inicializa Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app); // Obter o Firestore
 
-        // Credenciais de login
         const validUser = "admin";
         const validPass = "123456";
         let passwords = [];
@@ -55,12 +52,12 @@
 
         // Carregar senhas do arquivo JSON
         function loadPasswordsFromFile() {
-            const filePath = 'https://raw.githubusercontent.com/HPS-Sistema/GeradorSenhaAPP/main/senhas.json';
+            const filePath = 'https://raw.githubusercontent.com/HPS-Sistema/GeradorSenhaAPP/main/senhas.json'; // Link correto
             fetch(filePath)
                 .then(response => response.json())
                 .then(data => {
                     passwords = data.senhas;
-                    loadUsedPasswords(); // Carrega as senhas usadas do Firestore
+                    loadUsedPasswords();  // Carregar senhas usadas
                     alert("Senhas carregadas com sucesso!");
                 })
                 .catch(error => {
@@ -69,33 +66,20 @@
                 });
         }
 
-        // Carregar as senhas usadas do Firestore
-        async function loadUsedPasswords() {
-            try {
-                const docRef = doc(db, "senhas", "usadas");
-                const docSnap = await getDoc(docRef);
-                
-                if (docSnap.exists()) {
-                    usedPasswords = docSnap.data().usadas || [];
-                } else {
-                    usedPasswords = [];
-                }
-            } catch (error) {
-                console.error("Erro ao carregar senhas usadas:", error);
-                usedPasswords = [];
+        // Carregar as senhas usadas do localStorage
+        function loadUsedPasswords() {
+            const storedUsedPasswords = localStorage.getItem('usedPasswords');
+            if (storedUsedPasswords) {
+                usedPasswords = JSON.parse(storedUsedPasswords);
             }
         }
 
-        // Salvar as senhas usadas no Firestore
-        async function saveUsedPasswords() {
-            try {
-                await setDoc(doc(db, "senhas", "usadas"), { usadas: usedPasswords });
-                console.log("Senhas usadas salvas no Firestore.");
-            } catch (error) {
-                console.error("Erro ao salvar senhas no Firestore:", error);
-            }
+        // Salvar as senhas usadas no localStorage
+        function saveUsedPasswords() {
+            localStorage.setItem('usedPasswords', JSON.stringify(usedPasswords));
         }
 
+        // Função de login
         function login() {
             let user = document.getElementById("username").value;
             let pass = document.getElementById("password").value;
@@ -110,6 +94,7 @@
             }
         }
 
+        // Função para gerar senha
         function generatePassword() {
             if (passwords.length > 0) {
                 // Filtrar as senhas já usadas
@@ -119,10 +104,13 @@
                     // Pega uma senha que ainda não foi usada
                     let senha = availablePasswords.shift(); // Remove a primeira senha não usada
                     usedPasswords.push(senha); // Marca a senha como usada
-                    saveUsedPasswords(); // Salva as senhas usadas no Firestore
+                    saveUsedPasswords(); // Salva as senhas usadas
 
                     document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
                     
+                    // Salvar senha no Firestore
+                    savePasswordToFirestore(senha);
+
                     // Verifica se restam 5 ou menos senhas e exibe a mensagem de aviso
                     if (availablePasswords.length <= 5) {
                         document.getElementById("warningMessage").classList.remove("hidden");
@@ -134,6 +122,20 @@
             } else {
                 document.getElementById("generatedPassword").innerText = "Falha ao carregar senhas.";
             }
+        }
+
+        // Função para salvar senha no Firestore
+        function savePasswordToFirestore(password) {
+            db.collection("senhas").add({
+                senha: password,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                console.log("Senha salva com sucesso no Firestore!");
+            })
+            .catch(error => {
+                console.error("Erro ao salvar senha no Firestore: ", error);
+            });
         }
     </script>
 
