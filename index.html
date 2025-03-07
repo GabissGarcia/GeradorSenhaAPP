@@ -28,9 +28,9 @@
     </div>
 
     <script type="module">
-        // Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js";
+        // Importar as funções necessárias do Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
         // Sua configuração do Firebase
         const firebaseConfig = {
@@ -43,6 +43,7 @@
             appId: "1:347809837555:web:6062a5799ab3204a026286"
         };
 
+        // Inicializa o Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
@@ -95,8 +96,8 @@
             }
         }
 
-        // Gerar senha
-        function generatePassword() {
+        // Função para gerar e salvar senha no Firestore
+        async function generatePassword() {
             if (passwords.length > 0) {
                 let availablePasswords = passwords.filter(p => !usedPasswords.includes(p));
 
@@ -106,6 +107,17 @@
                     saveUsedPasswords();
 
                     document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
+
+                    // Salvar senha no Firestore
+                    try {
+                        const docRef = await addDoc(collection(db, "senhas"), {
+                            senha: senha,
+                            timestamp: new Date()
+                        });
+                        console.log("Senha salva no Firestore com ID: ", docRef.id);
+                    } catch (e) {
+                        console.error("Erro ao salvar senha no Firestore: ", e);
+                    }
 
                     if (availablePasswords.length <= 5) {
                         document.getElementById("warningMessage").classList.remove("hidden");
