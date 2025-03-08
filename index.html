@@ -22,7 +22,7 @@
     <!-- Página de Gerador de Senhas (após login) -->
     <div id="passwordPage" class="fadeIn hidden" style="display: none;">
         <h2>Gerador de Senhas</h2>
-        <button onclick="generatePassword()">Gerar Senha</button>
+        <button id="generateButton">Gerar Senha</button>
         <p id="generatedPassword"></p>
         <p id="warningMessage" class="hidden" style="color: red;">Atenção: Restam apenas 5 senhas. Crie novas senhas!</p>
     </div>
@@ -110,7 +110,7 @@
 
         // Função para gerar senha
         function generatePassword() {
-            console.log("Gerando senha...");
+            console.log("Função generatePassword foi chamada.");
             if (passwords.length > 0) {
                 console.log("Senhas disponíveis antes do filtro:", passwords);
                 console.log("Senhas usadas:", usedPasswords);
@@ -145,6 +145,9 @@
 
         // Adicionar o evento de clique para o botão de login
         document.getElementById("loginButton").addEventListener("click", login);
+
+        // Adicionar o evento de clique para o botão de gerar senha
+        document.getElementById("generateButton").addEventListener("click", generatePassword);
     </script>
 
 </body>
