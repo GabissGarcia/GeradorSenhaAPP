@@ -57,7 +57,7 @@
             const passwordsRef = ref(db, "senhas/disponiveis");
             const snapshot = await get(passwordsRef);
             if (snapshot.exists()) {
-                passwords = snapshot.val(); // Carrega as senhas disponíveis
+                passwords = Array.isArray(snapshot.val()) ? snapshot.val() : [];
                 console.log("Senhas disponíveis carregadas:", passwords);
                 loadUsedPasswords(); // Carrega as senhas usadas
                 alert("Senhas carregadas com sucesso!");
@@ -72,18 +72,23 @@
             const usedPasswordsRef = ref(db, "senhas/usadas");
             const snapshot = await get(usedPasswordsRef);
             if (snapshot.exists()) {
-                usedPasswords = snapshot.val().usedPasswords || [];
+                usedPasswords = Array.isArray(snapshot.val().usedPasswords) ? snapshot.val().usedPasswords : [];
                 console.log("Senhas usadas carregadas:", usedPasswords);
             } else {
                 console.log("Nenhuma senha usada encontrada no banco de dados.");
+                usedPasswords = [];
             }
         }
 
         // Salvar as senhas usadas no Firebase Realtime Database
         async function saveUsedPasswords() {
-            const usedPasswordsRef = ref(db, "senhas/usadas");
-            await set(usedPasswordsRef, { usedPasswords });
-            console.log("Senhas usadas salvas no banco de dados:", usedPasswords);
+            try {
+                const usedPasswordsRef = ref(db, "senhas/usadas");
+                await set(usedPasswordsRef, { usedPasswords });
+                console.log("Senhas usadas salvas no banco de dados:", usedPasswords);
+            } catch (error) {
+                console.error("Erro ao salvar senhas usadas:", error);
+            }
         }
 
         // Função de login
