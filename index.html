@@ -28,34 +28,29 @@
     </div>
 
     <script type="module">
-    // Firebase configuration
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-    // ADICIONE ESTA LINHA ↓
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        // Firebase configuration
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyAeRxUg_I9IumLSEUg2BBPAaGozcqiabRs",
-        authDomain: "salvarsenhas-abb03.firebaseapp.com",
-        databaseURL: "https://salvarsenhas-abb03-default-rtdb.firebaseio.com",
-        projectId: "salvarsenhas-abb03",
-        storageBucket: "salvarsenhas-abb03.firebasestorage.app",
-        messagingSenderId: "347809837555",
-        appId: "1:347809837555:web:6062a5799ab3204a026286"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeRxUg_I9IumLSEUg2BBPAaGozcqiabRs",
+            authDomain: "salvarsenhas-abb03.firebaseapp.com",
+            databaseURL: "https://salvarsenhas-abb03-default-rtdb.firebaseio.com",
+            projectId: "salvarsenhas-abb03",
+            storageBucket: "salvarsenhas-abb03.firebasestorage.app",
+            messagingSenderId: "347809837555",
+            appId: "1:347809837555:web:6062a5799ab3204a026286"
+        };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    
-    // ADICIONE ESTAS 2 LINHAS ↓
-    const auth = getAuth(app);
-    signInAnonymously(auth);
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-    // Definir o usuário e senha válidos (seu código continua igual a partir daqui)
-    const validUser = "admin";
-    const validPass = "123456";
-    let passwords = [];
+        // Definir o usuário e senha válidos
+        const validUser = "admin";
+        const validPass = "123456";
+        let passwords = [];
+        let usedPasswords = [];
 
         // Carregar senhas do arquivo JSON
         function loadPasswordsFromFile() {
