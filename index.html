@@ -32,19 +32,19 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
         import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyAeRxUg_I9IumLSEUg2BBPAaGozcqiabRs",
-    authDomain: "salvarsenhas-abb03.firebaseapp.com",
-    databaseURL: "https://salvarsenhas-abb03-default-rtdb.firebaseio.com",
-    projectId: "salvarsenhas-abb03",
-    storageBucket: "salvarsenhas-abb03.firebasestorage.app",
-    messagingSenderId: "347809837555",
-    appId: "1:347809837555:web:6062a5799ab3204a026286"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeRxUg_I9IumLSEUg2BBPAaGozcqiabRs",
+            authDomain: "salvarsenhas-abb03.firebaseapp.com",
+            databaseURL: "https://salvarsenhas-abb03-default-rtdb.firebaseio.com",
+            projectId: "salvarsenhas-abb03",
+            storageBucket: "salvarsenhas-abb03.firebasestorage.app",
+            messagingSenderId: "347809837555",
+            appId: "1:347809837555:web:6062a5799ab3204a026286"
+        };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
         // Definir o usuário e senha válidos
         const validUser = "admin";
@@ -52,51 +52,52 @@ const db = getDatabase(app);
         let passwords = [];
         let usedPasswords = [];
 
-        // Carregar senhas do arquivo JSON
-        function loadPasswordsFromFile() {
-            const filePath = 'https://raw.githubusercontent.com/HPS-Sistema/GeradorSenhaAPP/main/senhas.json';
-            fetch(filePath)
-                .then(response => response.json())
-                .then(data => {
-                    passwords = data.senhas;
-                    loadUsedPasswords();  // Carregar senhas usadas do Firestore
-                    alert("Senhas carregadas com sucesso!");
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar o arquivo de senhas:', error);
-                    alert("Falha ao carregar o arquivo de senhas.");
-                });
-        }
-
-        // Carregar as senhas usadas do Firestore
-        async function loadUsedPasswords() {
-            const usedPasswordsDocRef = doc(db, "senhas", "usadas");
-            const docSnap = await getDoc(usedPasswordsDocRef);
-            if (docSnap.exists()) {
-                usedPasswords = docSnap.data().usedPasswords || [];
+        // Carregar senhas do Realtime Database
+        async function loadPasswordsFromDatabase() {
+            const passwordsRef = ref(db, "senhas/disponiveis");
+            const snapshot = await get(passwordsRef);
+            if (snapshot.exists()) {
+                passwords = snapshot.val(); // Carrega as senhas disponíveis
+                console.log("Senhas disponíveis carregadas:", passwords);
+                loadUsedPasswords(); // Carrega as senhas usadas
+                alert("Senhas carregadas com sucesso!");
             } else {
-                console.log("Documento de senhas usadas não encontrado!");
+                console.error("Nenhuma senha disponível encontrada no banco de dados.");
+                alert("Falha ao carregar as senhas.");
             }
         }
 
-        // Salvar as senhas usadas no Firestore
+        // Carregar as senhas usadas do Realtime Database
+        async function loadUsedPasswords() {
+            const usedPasswordsRef = ref(db, "senhas/usadas");
+            const snapshot = await get(usedPasswordsRef);
+            if (snapshot.exists()) {
+                usedPasswords = snapshot.val().usedPasswords || [];
+                console.log("Senhas usadas carregadas:", usedPasswords);
+            } else {
+                console.log("Nenhuma senha usada encontrada no banco de dados.");
+            }
+        }
+
+        // Salvar as senhas usadas no Realtime Database
         async function saveUsedPasswords() {
-            const usedPasswordsDocRef = doc(db, "senhas", "usadas");
-            await setDoc(usedPasswordsDocRef, {
-                usedPasswords: usedPasswords
-            });
+            const usedPasswordsRef = ref(db, "senhas/usadas");
+            await set(usedPasswordsRef, { usedPasswords });
+            console.log("Senhas usadas salvas no banco de dados:", usedPasswords);
         }
 
         // Função de login
         function login() {
             let user = document.getElementById("username").value;
             let pass = document.getElementById("password").value;
-            
+
             if (user === validUser && pass === validPass) {
-                loadPasswordsFromFile();
-                document.getElementById("loginPage").classList.add("hidden");
-                document.getElementById("passwordPage").classList.remove("hidden");
-                document.getElementById("passwordPage").style.display = "block";
+                loadPasswordsFromDatabase(); // Carrega senhas do Realtime Database
+                setTimeout(() => {
+                    document.getElementById("loginPage").classList.add("hidden");
+                    document.getElementById("passwordPage").classList.remove("hidden");
+                    document.getElementById("passwordPage").style.display = "block";
+                }, 1000); // Aguarda 1 segundo para garantir que as senhas sejam carregadas
             } else {
                 document.getElementById("loginError").classList.remove("hidden");
             }
@@ -107,15 +108,15 @@ const db = getDatabase(app);
             if (passwords.length > 0) {
                 // Filtrar as senhas já usadas
                 let availablePasswords = passwords.filter(p => !usedPasswords.includes(p));
+                console.log("Senhas disponíveis após filtro:", availablePasswords);
 
                 if (availablePasswords.length > 0) {
-                    // Pega uma senha que ainda não foi usada
-                    let senha = availablePasswords.shift(); // Remove a primeira senha não usada
+                    let senha = availablePasswords.shift(); // Remove a primeira senha disponível
                     usedPasswords.push(senha); // Marca a senha como usada
-                    saveUsedPasswords(); // Salva as senhas usadas no Firestore
+                    saveUsedPasswords(); // Salva as senhas usadas no Realtime Database
 
                     document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
-                    
+
                     // Verifica se restam 5 ou menos senhas e exibe a mensagem de aviso
                     if (availablePasswords.length <= 5) {
                         document.getElementById("warningMessage").classList.remove("hidden");
