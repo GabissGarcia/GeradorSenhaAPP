@@ -20,7 +20,7 @@
     </div>
 
     <!-- Página de Gerador de Senhas (após login) -->
-    <div id="passwordPage" class="fadeIn hidden" style="display: none;">
+    <div id="passwordPage" class="fadeIn hidden">
         <h2>Gerador de Senhas</h2>
         <button onclick="generatePassword()">Gerar Senha</button>
         <p id="generatedPassword"></p>
@@ -42,7 +42,7 @@
             appId: "1:347809837555:web:6062a5799ab3204a026286"
         };
 
-        // Initialize Firebase
+        // Inicializa o Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
@@ -96,7 +96,6 @@
                 loadPasswordsFromFile();
                 document.getElementById("loginPage").classList.add("hidden");
                 document.getElementById("passwordPage").classList.remove("hidden");
-                document.getElementById("passwordPage").style.display = "block";
             } else {
                 document.getElementById("loginError").classList.remove("hidden");
             }
