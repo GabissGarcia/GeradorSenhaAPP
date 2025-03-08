@@ -15,12 +15,12 @@
         <h2>Login</h2>
         <input type="text" id="username" placeholder="Usuário"><br>
         <input type="password" id="password" placeholder="Senha"><br>
-        <button id="loginButton">Entrar</button>
+        <button id="loginButton">Entrar</button> <!-- Remova o onclick -->
         <p id="loginError" class="hidden">Usuário ou senha incorretos!</p>
     </div>
 
     <!-- Página de Gerador de Senhas (após login) -->
-    <div id="passwordPage" class="fadeIn hidden">
+    <div id="passwordPage" class="fadeIn hidden" style="display: none;">
         <h2>Gerador de Senhas</h2>
         <button onclick="generatePassword()">Gerar Senha</button>
         <p id="generatedPassword"></p>
@@ -42,7 +42,7 @@
             appId: "1:347809837555:web:6062a5799ab3204a026286"
         };
 
-        // Inicializa o Firebase
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
@@ -96,22 +96,23 @@
                 loadPasswordsFromFile();
                 document.getElementById("loginPage").classList.add("hidden");
                 document.getElementById("passwordPage").classList.remove("hidden");
+                document.getElementById("passwordPage").style.display = "block";
             } else {
                 document.getElementById("loginError").classList.remove("hidden");
             }
         }
 
         // Função para gerar senha
-        async function generatePassword() {
+        function generatePassword() {
             if (passwords.length > 0) {
-                // Filtra as senhas já usadas
+                // Filtrar as senhas já usadas
                 let availablePasswords = passwords.filter(p => !usedPasswords.includes(p));
 
                 if (availablePasswords.length > 0) {
-                    // Pega a próxima senha que ainda não foi usada
-                    let senha = availablePasswords[0]; // Pegamos a primeira senha não usada
+                    // Pega uma senha que ainda não foi usada
+                    let senha = availablePasswords.shift(); // Remove a primeira senha não usada
                     usedPasswords.push(senha); // Marca a senha como usada
-                    await saveUsedPasswords(); // Salva as senhas usadas no Firestore
+                    saveUsedPasswords(); // Salva as senhas usadas no Firestore
 
                     document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
                     
