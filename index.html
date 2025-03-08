@@ -62,7 +62,7 @@
                 loadUsedPasswords(); // Carrega as senhas usadas
                 alert("Senhas carregadas com sucesso!");
             } else {
-                console.error("Nenhuma senha disponível encontrada no banco de dados.");
+                console.error("Erro: Nenhuma senha disponível encontrada no banco de dados.");
                 alert("Falha ao carregar as senhas.");
             }
         }
@@ -105,7 +105,11 @@
 
         // Função para gerar senha
         function generatePassword() {
+            console.log("Gerando senha...");
             if (passwords.length > 0) {
+                console.log("Senhas disponíveis antes do filtro:", passwords);
+                console.log("Senhas usadas:", usedPasswords);
+
                 // Filtrar as senhas já usadas
                 let availablePasswords = passwords.filter(p => !usedPasswords.includes(p));
                 console.log("Senhas disponíveis após filtro:", availablePasswords);
@@ -113,6 +117,8 @@
                 if (availablePasswords.length > 0) {
                     let senha = availablePasswords.shift(); // Remove a primeira senha disponível
                     usedPasswords.push(senha); // Marca a senha como usada
+                    console.log("Senha gerada:", senha);
+
                     saveUsedPasswords(); // Salva as senhas usadas no Firebase
 
                     document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
@@ -122,10 +128,12 @@
                         document.getElementById("warningMessage").classList.remove("hidden");
                     }
                 } else {
+                    console.error("Nenhuma senha disponível após o filtro.");
                     document.getElementById("generatedPassword").innerText = "Todas as senhas foram usadas!";
                     document.getElementById("warningMessage").classList.add("hidden");
                 }
             } else {
+                console.error("A lista de senhas está vazia.");
                 document.getElementById("generatedPassword").innerText = "Falha ao carregar senhas.";
             }
         }
