@@ -15,7 +15,7 @@
         <h2>Login</h2>
         <input type="text" id="username" placeholder="Usuário"><br>
         <input type="password" id="password" placeholder="Senha"><br>
-        <button id="loginButton">Entrar</button> <!-- Remova o onclick -->
+        <button id="loginButton">Entrar</button>
         <p id="loginError" class="hidden">Usuário ou senha incorretos!</p>
     </div>
 
@@ -30,7 +30,7 @@
     <script type="module">
         // Firebase configuration
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAeRxUg_I9IumLSEUg2BBPAaGozcqiabRs",
@@ -52,7 +52,7 @@
         let passwords = [];
         let usedPasswords = [];
 
-        // Carregar senhas do Realtime Database
+        // Carregar senhas disponíveis do Firebase Realtime Database
         async function loadPasswordsFromDatabase() {
             const passwordsRef = ref(db, "senhas/disponiveis");
             const snapshot = await get(passwordsRef);
@@ -67,7 +67,7 @@
             }
         }
 
-        // Carregar as senhas usadas do Realtime Database
+        // Carregar as senhas usadas do Firebase Realtime Database
         async function loadUsedPasswords() {
             const usedPasswordsRef = ref(db, "senhas/usadas");
             const snapshot = await get(usedPasswordsRef);
@@ -79,7 +79,7 @@
             }
         }
 
-        // Salvar as senhas usadas no Realtime Database
+        // Salvar as senhas usadas no Firebase Realtime Database
         async function saveUsedPasswords() {
             const usedPasswordsRef = ref(db, "senhas/usadas");
             await set(usedPasswordsRef, { usedPasswords });
@@ -92,7 +92,7 @@
             let pass = document.getElementById("password").value;
 
             if (user === validUser && pass === validPass) {
-                loadPasswordsFromDatabase(); // Carrega senhas do Realtime Database
+                loadPasswordsFromDatabase(); // Carrega senhas diretamente do Firebase
                 setTimeout(() => {
                     document.getElementById("loginPage").classList.add("hidden");
                     document.getElementById("passwordPage").classList.remove("hidden");
@@ -113,7 +113,7 @@
                 if (availablePasswords.length > 0) {
                     let senha = availablePasswords.shift(); // Remove a primeira senha disponível
                     usedPasswords.push(senha); // Marca a senha como usada
-                    saveUsedPasswords(); // Salva as senhas usadas no Realtime Database
+                    saveUsedPasswords(); // Salva as senhas usadas no Firebase
 
                     document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
 
