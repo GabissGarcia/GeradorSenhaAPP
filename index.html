@@ -15,7 +15,7 @@
         <h2>Login</h2>
         <input type="text" id="username" placeholder="Usuário"><br>
         <input type="password" id="password" placeholder="Senha"><br>
-        <button id="loginButton">Entrar</button> <!-- Remova o onclick -->
+        <button id="loginButton">Entrar</button>
         <p id="loginError" class="hidden">Usuário ou senha incorretos!</p>
     </div>
 
@@ -103,16 +103,16 @@
         }
 
         // Função para gerar senha
-        function generatePassword() {
+        async function generatePassword() {
             if (passwords.length > 0) {
-                // Filtrar as senhas já usadas
+                // Filtra as senhas já usadas
                 let availablePasswords = passwords.filter(p => !usedPasswords.includes(p));
 
                 if (availablePasswords.length > 0) {
-                    // Pega uma senha que ainda não foi usada
-                    let senha = availablePasswords.shift(); // Remove a primeira senha não usada
+                    // Pega a próxima senha que ainda não foi usada
+                    let senha = availablePasswords[0]; // Pegamos a primeira senha não usada
                     usedPasswords.push(senha); // Marca a senha como usada
-                    saveUsedPasswords(); // Salva as senhas usadas no Firestore
+                    await saveUsedPasswords(); // Salva as senhas usadas no Firestore
 
                     document.getElementById("generatedPassword").innerText = "Senha gerada: " + senha;
                     
